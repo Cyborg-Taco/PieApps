@@ -345,7 +345,7 @@ Commit: ${__mod_info[$id/pkg_repo_commit]}
 Date: ${__mod_info[$id/pkg_repo_date]}
 _EOF_
                printMsgs "dialog" "$info"
-               ;;
+                ;;
             Z)
                 rp_callModule "$id" clean
                 printMsgs "dialog" "$__builddir/$id has been removed."
@@ -674,18 +674,17 @@ function reboot_setup()
 function gui_setup() {
     joy2keyStart
     depends_setup
-    local default
+    local default="P"
     while true; do
         local commit=$(sudo -u "$__user" git -C "$scriptdir" log -1 --pretty=format:"%cr (%h)")
 
         cmd=(dialog --backtitle "$__backtitle" --title "RetroPie-Setup Script" --cancel-label "Exit" --item-help --help-button --default-item "$default" --menu "Version: $__version - Last Commit: $commit\nSystem: $__platform ($__platform_arch) - running on $__os_desc" 22 76 16)
         options=(
-            I "Basic install" "I This will install all packages from Core and Main which gives a basic RetroPie install. Further packages can then be installed later from the Optional and Experimental sections. If binaries are available they will be used, alternatively packages will be built from source - which will take longer."
 
             U "Update" "U Updates RetroPie-Setup and all currently installed packages. Will also allow to update OS packages. If binaries are available they will be used, otherwise packages will be built from source."
 
-            P "Manage packages"
-            "P Install/Remove and Configure the various components of RetroPie, including emulators, ports, and controller drivers."
+            P "App Store / Manage packages"
+            "P Browse, Install/Remove and Configure the various components of RetroPie (App Store experience)."
 
             C "Configuration / tools"
             "C Configuration and Tools. Any packages you have installed that have additional configuration options will also appear here."
@@ -713,19 +712,6 @@ function gui_setup() {
         default="$choice"
 
         case "$choice" in
-            I)
-                ! check_connection_gui_setup && continue
-                dialog --defaultno --yesno "Are you sure you want to do a basic install?\n\nThis will install all packages from the 'Core' and 'Main' package sections." 22 76 2>&1 >/dev/tty || continue
-                clear
-                local logfilename
-                rps_logInit
-                {
-                    rps_logStart
-                    basic_install_setup
-                    rps_logEnd
-                } &> >(_setup_gzip_log "$logfilename")
-                rps_printInfo "$logfilename"
-                ;;
             U)
                 update_packages_gui_setup
                 ;;
